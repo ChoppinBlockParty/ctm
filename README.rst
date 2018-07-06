@@ -61,16 +61,14 @@ More examples could be found in ``tests/tests.cpp``.
     };
 
     JsonSerializable* JsonSerializable::createFromJson(JsonObject const& json_object) {
-      constexpr auto data = ctm::makeStaticHashMapInfoData(
-        std::make_tuple("Holy", &Holy::createFromJson),
-        std::make_tuple("Moly", &Moly::createFromJson),
-        std::make_tuple("Miny", &Miny::createFromJson),
-        std::make_tuple("Moe", &Moe::createFromJson));
-      static constexpr auto map
-        = ctm::StaticHashMap<decltype(data),
-                                          data.maxBucketSize,
-                                          data.bucketCount,
-                                          data.elementCount>::make(data);
+      constexpr auto spec = ctm::makeHashMapSpec(std::make_tuple("Holy", &Holy::createFromJson),
+                                                 std::make_tuple("Moly", &Moly::createFromJson),
+                                                 std::make_tuple("Miny", &Miny::createFromJson),
+                                                 std::make_tuple("Moe", &Moe::createFromJson));
+      static constexpr auto map = ctm::HashMap<decltype(spec),
+                                               spec.maxBucketSize,
+                                               spec.bucketCount,
+                                               spec.elementCount>::make(spec);
       auto factory_function = map[json_object.at("type")];
       if (factory_function == nullptr)
         return nullptr;

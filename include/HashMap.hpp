@@ -209,7 +209,7 @@ constexpr auto assignTuples(std::tuple<TArgs...>& lhs, std::tuple<TArgs...> cons
 }
 
 template <typename T, std::size_t N>
-struct StaticHashMapInfoData {
+struct HashMapSpec {
   using KeyType = typename T::first_type;
   using ValueType = typename T::second_type;
   using PairType = T;
@@ -224,9 +224,8 @@ struct StaticHashMapInfoData {
 
 namespace Internal {
 template <typename... TArgs>
-constexpr static auto makeStaticHashMapInfoDataImpl(double load_factor,
-                                                    double min_load_factor,
-                                                    TArgs&&... args) {
+constexpr auto
+makeHashMapSpecImpl(double load_factor, double min_load_factor, TArgs&&... args) {
   using tuple_type = typename Internal::TupleHeadTypeProvider<TArgs...>::type;
   using tuple_pair_converter_type = Internal::TupleToPairConversion<tuple_type>;
   using pair_type = typename tuple_pair_converter_type::PairType;
@@ -291,21 +290,20 @@ constexpr static auto makeStaticHashMapInfoDataImpl(double load_factor,
     if (!nonuniquenesses[i])
       bucket_indexes[i] %= last_improving_bucket_count;
   }
-  return StaticHashMapInfoData<pair_type, sizeof...(TArgs)>{
-    last_improving_max_bucket_size,
-    last_improving_bucket_count,
-    element_count,
-    data_pairs,
-    bucket_indexes,
-    nonuniquenesses};
+  return HashMapSpec<pair_type, sizeof...(TArgs)>{last_improving_max_bucket_size,
+                                                  last_improving_bucket_count,
+                                                  element_count,
+                                                  data_pairs,
+                                                  bucket_indexes,
+                                                  nonuniquenesses};
 }
 }
 
 template <typename... TArgs,
           typename = typename std::enable_if<std::is_floating_point<
             typename Internal::TupleHeadTypeProvider<TArgs...>::type>::value>::type>
-constexpr static auto makeStaticHashMapInfoData(TArgs&&... args) {
-  return Internal::makeStaticHashMapInfoDataImpl(std::forward<TArgs>(args)...);
+constexpr static auto makeHashMapSpec(TArgs&&... args) {
+  return Internal::makeHashMapSpecImpl(std::forward<TArgs>(args)...);
 }
 
 template <typename... TArgs,
@@ -314,16 +312,16 @@ template <typename... TArgs,
               typename Internal::TupleHeadTypeProvider<TArgs...>::type>::value,
             int>::type
           = 0>
-constexpr static auto makeStaticHashMapInfoData(TArgs&&... args) {
-  return Internal::makeStaticHashMapInfoDataImpl(1.0, 0.5, std::forward<TArgs>(args)...);
+constexpr static auto makeHashMapSpec(TArgs&&... args) {
+  return Internal::makeHashMapSpecImpl(1.0, 0.5, std::forward<TArgs>(args)...);
 }
 
-template <typename T, std::size_t N, std::size_t M, std::size_t C>
-class StaticHashMap {
+template <typename TSpec, std::size_t N, std::size_t M, std::size_t C>
+class HashMap {
 public:
-  using KeyType = typename T::KeyType;
-  using ValueType = typename T::ValueType;
-  using PairType = typename T::PairType;
+  using KeyType = typename TSpec::KeyType;
+  using ValueType = typename TSpec::ValueType;
+  using PairType = typename TSpec::PairType;
 
   constexpr auto begin() const { return _buckets.begin(); }
 
@@ -353,26 +351,26 @@ public:
     return find(key);
   }
 
-  static constexpr StaticHashMap make(T const& t) {
+  static constexpr HashMap make(TSpec const& spec) {
     Array<Array<PairType, N>, M> array{};
-    for (std::size_t i = 0; i < t.dataPairs.size(); ++i) {
-      if (t.nonuniquenesses[i])
+    for (std::size_t i = 0; i < spec.dataPairs.size(); ++i) {
+      if (spec.nonuniquenesses[i])
         continue;
-      for (auto ptr = array[t.bucketIndexes[i]].begin(), end_ptr = ptr + N;
+      for (auto ptr = array[spec.bucketIndexes[i]].begin(), end_ptr = ptr + N;
            ptr != end_ptr;
            ++ptr) {
         if (ptr->first)
           continue;
-        ptr->first = t.dataPairs[i].first;
-        Internal::assignTuples(ptr->second, t.dataPairs[i].second);
+        ptr->first = spec.dataPairs[i].first;
+        Internal::assignTuples(ptr->second, spec.dataPairs[i].second);
         break;
       }
     }
-    return StaticHashMap{array};
+    return HashMap{array};
   }
 
 private:
-  constexpr StaticHashMap(Array<Array<PairType, N>, M> const& data) : _buckets(data){};
+  constexpr HashMap(Array<Array<PairType, N>, M> const& data) : _buckets(data){};
 
   Array<Array<PairType, N>, M> _buckets;
 };

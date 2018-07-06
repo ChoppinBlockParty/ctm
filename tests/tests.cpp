@@ -2,7 +2,7 @@
 #undef NDEBUG
 #endif
 
-#include <StaticHashMap.hpp>
+#include <HashMap.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -27,20 +27,19 @@ int fDuplicate() { return 999; }
 constexpr auto key4 = "ac";
 
 constexpr auto makeTestMap0010() {
-  constexpr auto data
-    = makeStaticHashMapInfoData(1.0,
-                                0.5,
-                                std::make_tuple("bsd", f1),
-                                std::make_tuple("holy", f2),
-                                std::make_tuple("", f3),
-                                std::make_tuple("duplicate", f4),
-                                std::make_tuple(key4, f5),
-                                std::make_tuple("duplicate", fDuplicate),
-                                std::make_tuple("ab", f6));
-  return StaticHashMap<decltype(data),
-                       data.maxBucketSize,
-                       data.bucketCount,
-                       data.elementCount>::make(data);
+  constexpr auto data = makeHashMapSpec(1.0,
+                                        0.5,
+                                        std::make_tuple("bsd", f1),
+                                        std::make_tuple("holy", f2),
+                                        std::make_tuple("", f3),
+                                        std::make_tuple("duplicate", f4),
+                                        std::make_tuple(key4, f5),
+                                        std::make_tuple("duplicate", fDuplicate),
+                                        std::make_tuple("ab", f6));
+  return HashMap<decltype(data),
+                 data.maxBucketSize,
+                 data.bucketCount,
+                 data.elementCount>::make(data);
 }
 
 void test0010() {
@@ -100,17 +99,17 @@ int fTest00202(int value) { return 2 * value; }
 int fTest00203(int value) { return 3 * value; }
 
 constexpr auto makeTestMap0020() {
-  constexpr auto data = makeStaticHashMapInfoData(
-    1.0,
-    0.5,
-    std::make_tuple("Eeny", fTest00201, fTest00202, fTest00203),
-    std::make_tuple("meeny", fTest00202, fTest00201, fTest00203),
-    std::make_tuple("miny", fTest00203, fTest00202, fTest00201),
-    std::make_tuple("moe", fTest00201, fTest00203, fTest00202));
-  return StaticHashMap<decltype(data),
-                       data.maxBucketSize,
-                       data.bucketCount,
-                       data.elementCount>::make(data);
+  constexpr auto data
+    = makeHashMapSpec(1.0,
+                      0.5,
+                      std::make_tuple("Eeny", fTest00201, fTest00202, fTest00203),
+                      std::make_tuple("meeny", fTest00202, fTest00201, fTest00203),
+                      std::make_tuple("miny", fTest00203, fTest00202, fTest00201),
+                      std::make_tuple("moe", fTest00201, fTest00203, fTest00202));
+  return HashMap<decltype(data),
+                 data.maxBucketSize,
+                 data.bucketCount,
+                 data.elementCount>::make(data);
 }
 
 void test0020() {
@@ -182,18 +181,18 @@ void test0020() {
 }
 
 constexpr auto makeTestMap0030() {
-  constexpr auto data
-    = makeStaticHashMapInfoData(4.0,
-                                2.0,
-                                std::make_tuple("Catch", 'c'),
-                                std::make_tuple("a tiger", 'a'),
-                                std::make_tuple("by the toe", 'b'),
-                                std::make_tuple("If he hollers, let him go", 'i'));
+  constexpr auto spec
+    = makeHashMapSpec(4.0,
+                      2.0,
+                      std::make_tuple("Catch", 'c'),
+                      std::make_tuple("a tiger", 'a'),
+                      std::make_tuple("by the toe", 'b'),
+                      std::make_tuple("If he hollers, let him go", 'i'));
 
-  return StaticHashMap<decltype(data),
-                       data.maxBucketSize,
-                       data.bucketCount,
-                       data.elementCount>::make(data);
+  return HashMap<decltype(spec),
+                 spec.maxBucketSize,
+                 spec.bucketCount,
+                 spec.elementCount>::make(spec);
 }
 
 void test0030() {
@@ -220,17 +219,17 @@ void test0030() {
 }
 
 constexpr auto makeTestMap0040() {
-  constexpr auto data = makeStaticHashMapInfoData(1.0,
-                                                  0.5,
-                                                  std::make_tuple(4096, 1, 'q'),
-                                                  std::make_tuple(2048, 2, 'w'),
-                                                  std::make_tuple(8192, 3, 'e'),
-                                                  std::make_tuple(1024, 4, 'r'));
+  constexpr auto data = makeHashMapSpec(1.0,
+                                        0.5,
+                                        std::make_tuple(4096, 1, 'q'),
+                                        std::make_tuple(2048, 2, 'w'),
+                                        std::make_tuple(8192, 3, 'e'),
+                                        std::make_tuple(1024, 4, 'r'));
 
-  return StaticHashMap<decltype(data),
-                       data.maxBucketSize,
-                       data.bucketCount,
-                       data.elementCount>::make(data);
+  return HashMap<decltype(data),
+                 data.maxBucketSize,
+                 data.bucketCount,
+                 data.elementCount>::make(data);
 }
 
 void test0040() {
