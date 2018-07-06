@@ -88,3 +88,5 @@ SpacesInSquareBrackets: false
 PointerAlignment: Left
 ReflowComments: false
 SortIncludes: true
+FixNamespaceComments: false
+

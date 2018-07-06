@@ -1,18 +1,18 @@
 #pragma once
 
-#ifndef COMPILE_TIME_ARMOR_BYTES_HASH_ALGORITHM_DEFAULT
-#define COMPILE_TIME_ARMOR_BYTES_HASH_ALGORITHM_DEFAULT FnvBytesHash
+#ifndef CTM_BYTES_HASH_ALGORITHM_DEFAULT
+#define CTM_BYTES_HASH_ALGORITHM_DEFAULT FnvBytesHash
 #endif
 
-#ifndef COMPILE_TIME_ARMOR_BYTES_HASH_ALGORITHM_INTEGER_SIZE_DEFAULT
-#define COMPILE_TIME_ARMOR_BYTES_HASH_ALGORITHM_INTEGER_SIZE_DEFAULT 4
+#ifndef CTM_BYTES_HASH_ALGORITHM_INTEGER_SIZE_DEFAULT
+#define CTM_BYTES_HASH_ALGORITHM_INTEGER_SIZE_DEFAULT 4
 #endif
 
 #include <string>
 #include <type_traits>
 
-namespace CompileTimeArmor {
-namespace Internal {
+namespace ctm {
+namespace internal {
 template <typename TResult, typename TArg>
 struct HashBase {
   using ResultType = TResult;
@@ -24,40 +24,39 @@ template <typename T>
 struct Hash;
 
 template <typename T>
-struct Hash<T*> : Internal::HashBase<std::size_t, T*> {
+struct Hash<T*> : internal::HashBase<std::size_t, T*> {
   constexpr std::size_t operator()(T* ptr) const noexcept {
     return reinterpret_cast<std::size_t>(ptr);
   }
 };
 
-#define COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(T)                                    \
+#define CTM_TRIVIAL_HASH_DEFINITION(T)                                                   \
   template <>                                                                            \
-  struct Hash<T> : Internal::HashBase<std::size_t, T> {                                  \
+  struct Hash<T> : internal::HashBase<std::size_t, T> {                                  \
     constexpr std::size_t operator()(T value) const noexcept {                           \
       return static_cast<std::size_t>(value);                                            \
     }                                                                                    \
   };
 
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(bool)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(char)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(signed char)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(unsigned char)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(wchar_t)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(char16_t)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(char32_t)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(short)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(int)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(long)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(long long)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(unsigned short)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(unsigned int)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(unsigned long)
-COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION(unsigned long long)
+CTM_TRIVIAL_HASH_DEFINITION(bool)
+CTM_TRIVIAL_HASH_DEFINITION(char)
+CTM_TRIVIAL_HASH_DEFINITION(signed char)
+CTM_TRIVIAL_HASH_DEFINITION(unsigned char)
+CTM_TRIVIAL_HASH_DEFINITION(wchar_t)
+CTM_TRIVIAL_HASH_DEFINITION(char16_t)
+CTM_TRIVIAL_HASH_DEFINITION(char32_t)
+CTM_TRIVIAL_HASH_DEFINITION(short)
+CTM_TRIVIAL_HASH_DEFINITION(int)
+CTM_TRIVIAL_HASH_DEFINITION(long)
+CTM_TRIVIAL_HASH_DEFINITION(long long)
+CTM_TRIVIAL_HASH_DEFINITION(unsigned short)
+CTM_TRIVIAL_HASH_DEFINITION(unsigned int)
+CTM_TRIVIAL_HASH_DEFINITION(unsigned long)
+CTM_TRIVIAL_HASH_DEFINITION(unsigned long long)
 
-#undef COMPILE_TIME_ARMOR_TRIVIAL_HASH_DEFINITION
+#undef CTM_TRIVIAL_HASH_DEFINITION
 
-namespace Internal {
-
+namespace internal {
 constexpr std::size_t convertCharsToSizet(char const* chars) {
   std::size_t result = 0;
   constexpr auto size = sizeof(std::size_t);
@@ -198,7 +197,7 @@ struct FnvBytesHash {
                                     std::size_t size,
                                     std::size_t seed
                                     = static_cast<std::size_t>(2166136261UL)) {
-    return Internal::hashBytesWithFnv<N>(ptr, size, seed);
+    return internal::hashBytesWithFnv<N>(ptr, size, seed);
   }
 };
 
@@ -208,16 +207,15 @@ struct MurmurBytesHash {
                                     std::size_t size,
                                     std::size_t seed
                                     = static_cast<std::size_t>(0xc70f6907UL)) {
-    return Internal::hashBytesWithMurmur<N>(ptr, size, seed);
+    return internal::hashBytesWithMurmur<N>(ptr, size, seed);
   }
 };
 
 struct BytesHash
-  : COMPILE_TIME_ARMOR_BYTES_HASH_ALGORITHM_DEFAULT<COMPILE_TIME_ARMOR_BYTES_HASH_ALGORITHM_INTEGER_SIZE_DEFAULT> {
-};
+  : CTM_BYTES_HASH_ALGORITHM_DEFAULT<CTM_BYTES_HASH_ALGORITHM_INTEGER_SIZE_DEFAULT> {};
 
 template <>
-struct Hash<char const*> : Internal::HashBase<std::size_t, char const*> {
+struct Hash<char const*> : internal::HashBase<std::size_t, char const*> {
   constexpr std::size_t operator()(char const* chars) const noexcept {
     auto chars_begin = chars;
     while (*chars++ != '\0') {
@@ -232,14 +230,14 @@ struct Hash<char const*> : Internal::HashBase<std::size_t, char const*> {
 };
 
 template <std::size_t N>
-struct Hash<char[N]> : Internal::HashBase<std::size_t, const char*> {
+struct Hash<char[N]> : internal::HashBase<std::size_t, const char*> {
   constexpr std::size_t operator()(char const (&chars)[N]) const noexcept {
     return BytesHash::hash(chars, N - 1);
   }
 };
 
 template <>
-struct Hash<std::string> : Internal::HashBase<std::size_t, std::string> {
+struct Hash<std::string> : internal::HashBase<std::size_t, std::string> {
   std::size_t operator()(std::string const& string) const noexcept {
     return BytesHash::hash(string.data(), string.length());
   }

@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 
-using namespace CompileTimeArmor;
+using namespace ctm;
 
 int f1() { return 1; }
 
@@ -124,9 +124,9 @@ void test0020() {
                              std::tuple<int (*)(int), int (*)(int), int (*)(int)>>::value,
                 "Invalid value type");
   static_assert(
-    std::is_same<decltype(map)::PairType,
-                 std::pair<String,
-                           std::tuple<int (*)(int), int (*)(int), int (*)(int)>>>::value,
+    std::is_same<
+      decltype(map)::PairType,
+      std::pair<String, std::tuple<int (*)(int), int (*)(int), int (*)(int)>>>::value,
     "Invalid pair type");
   static_assert(map.bucketSize() == 1, "Invalid bucket size");
   static_assert(map.bucketCount() == 5, "Invalid bucket count");

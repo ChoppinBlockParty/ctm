@@ -1,8 +1,8 @@
-Compile-Time Armor - Static Hash Map
-====================================
+Compile-Time Map - Static Hash Map at Compile Time
+==================================================
 
-.. image:: https://travis-ci.org/ChoppinBlockParty/CompileTimeArmor.svg?branch=master
-   :target: https://travis-ci.org/ChoppinBlockParty/CompileTimeArmor
+.. image:: https://travis-ci.org/ChoppinBlockParty/ctm.svg?branch=master
+   :target: https://travis-ci.org/ChoppinBlockParty/ctm
 
 Allows to have a hash map built at compile time. The map could be used to perform runtime as well
 as compile-time lookups.
@@ -61,13 +61,13 @@ More examples could be found in ``tests/tests.cpp``.
     };
 
     JsonSerializable* JsonSerializable::createFromJson(JsonObject const& json_object) {
-      constexpr auto data = CompileTimeArmor::makeStaticHashMapInfoData(
+      constexpr auto data = ctm::makeStaticHashMapInfoData(
         std::make_tuple("Holy", &Holy::createFromJson),
         std::make_tuple("Moly", &Moly::createFromJson),
         std::make_tuple("Miny", &Miny::createFromJson),
         std::make_tuple("Moe", &Moe::createFromJson));
       static constexpr auto map
-        = CompileTimeArmor::StaticHashMap<decltype(data),
+        = ctm::StaticHashMap<decltype(data),
                                           data.maxBucketSize,
                                           data.bucketCount,
                                           data.elementCount>::make(data);

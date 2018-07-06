@@ -8,7 +8,7 @@
 
 #include "Hash.hpp"
 
-namespace CompileTimeArmor {
+namespace ctm {
 template <typename T, std::size_t N>
 struct Array {
   using value_type = T;
@@ -134,13 +134,12 @@ template <std::size_t M, typename T>
 struct TupleToPairConversionImpl<0, M, T> : public TupleToPairConversionImpl<1, M, T> {
   using Base = TupleToPairConversionImpl<1, M, T>;
 
-  using KeyType =
-    typename std::conditional<std::is_convertible<
-                                typename std::remove_cv<typename std::remove_reference<
-                                  typename std::tuple_element<0, T>::type>::type>::type,
-                                char const*>::value,
-                              String,
-                              typename std::tuple_element<0, T>::type>::type;
+  using KeyType = typename std::conditional<
+    std::is_convertible<typename std::remove_cv<typename std::remove_reference<
+                          typename std::tuple_element<0, T>::type>::type>::type,
+                        char const*>::value,
+    String,
+    typename std::tuple_element<0, T>::type>::type;
   using ValueType = typename Base::ValueType;
   using PairType = std::pair<KeyType, ValueType>;
 
@@ -231,6 +230,7 @@ constexpr static auto makeStaticHashMapInfoDataImpl(double load_factor,
   using tuple_type = typename Internal::TupleHeadTypeProvider<TArgs...>::type;
   using tuple_pair_converter_type = Internal::TupleToPairConversion<tuple_type>;
   using pair_type = typename tuple_pair_converter_type::PairType;
+
   Array<pair_type, sizeof...(args)> const data_pairs{
     {tuple_pair_converter_type::makePairFromTuple(args)...}};
   Array<std::size_t, sizeof...(args)> bucket_indexes{};
@@ -309,10 +309,10 @@ constexpr static auto makeStaticHashMapInfoData(TArgs&&... args) {
 }
 
 template <typename... TArgs,
-          typename std::
-            enable_if<!std::is_floating_point<
-                        typename Internal::TupleHeadTypeProvider<TArgs...>::type>::value,
-                      int>::type
+          typename std::enable_if<
+            !std::is_floating_point<
+              typename Internal::TupleHeadTypeProvider<TArgs...>::type>::value,
+            int>::type
           = 0>
 constexpr static auto makeStaticHashMapInfoData(TArgs&&... args) {
   return Internal::makeStaticHashMapInfoDataImpl(1.0, 0.5, std::forward<TArgs>(args)...);
