@@ -1,6 +1,6 @@
 # Compile-Time Map - Static Hash Map at Compile Time
 
-[![Build Status](https://travis-ci.org/ChoppinBlockParty/ctm.svg?branch=master)](https://travis-ci.org/ChoppinBlockParty/ctm)
+[![Build Status](https://travis-ci.com/ChoppinBlockParty/ctm.svg?branch=master)](https://travis-ci.com/ChoppinBlockParty/ctm)
 
 Allows to have a hash map built at compile time. The map could be used to perform runtime as well
 as compile-time lookups.
