@@ -1,6 +1,6 @@
 Language:        Cpp
 DisableFormat:   false
-AccessModifierOffset: -2
+AccessModifierOffset: -4
 
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: false
@@ -43,11 +43,11 @@ BreakConstructorInitializersBeforeComma: false
 BreakStringLiterals: false
 
 ColumnLimit:     90
-ConstructorInitializerIndentWidth: 2
-ContinuationIndentWidth: 2
+ConstructorInitializerIndentWidth: 4
+ContinuationIndentWidth: 4
 Standard:        Cpp11
-IndentWidth:     2
-TabWidth:        2
+IndentWidth:     4
+TabWidth:        4
 UseTab:          Never
 
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
