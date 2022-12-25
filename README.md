@@ -1,25 +1,20 @@
-Compile-Time Map - Static Hash Map at Compile Time
-==================================================
+# Compile-Time Map - Static Hash Map at Compile Time
 
-.. image:: https://travis-ci.org/ChoppinBlockParty/ctm.svg?branch=master
-   :target: https://travis-ci.org/ChoppinBlockParty/ctm
+[![Build Status](https://travis-ci.org/ChoppinBlockParty/ctm.svg?branch=master)](https://travis-ci.org/ChoppinBlockParty/ctm)
 
 Allows to have a hash map built at compile time. The map could be used to perform runtime as well
 as compile-time lookups.
 
-Install
-------
+## Install
 
 * C++-14 supporting compiler
 * Header-only usage without any external dependencies, except the Standard Library.
 
-How to
-------
+## Usage
 
-More examples could be found in ``tests/tests.cpp``.
+More examples could be found in `tests/tests.cpp`.
 
-.. code:: c++
-
+```cpp
     class JsonSerializable {
     public:
       virtual ~JsonSerializable() {}
@@ -74,3 +69,4 @@ More examples could be found in ``tests/tests.cpp``.
         return nullptr;
       return factory_function(json_object);
     }
+```
